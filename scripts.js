@@ -51,7 +51,7 @@ function connectDots(array){
      for (let j = 0; j < (array.length - 1); j++) { //for each segment, finish at last coord pair
          const element = array[j];
          const endPoint = array[(j + 1)];
-        drawTimer(element.x, element.y, endPoint.x, endPoint.y); 
+        animateLine(element.x, element.y, endPoint.x, endPoint.y, 0); 
         // ctx.beginPath();
         // ctx.moveTo(element.x, element.y);
         // ctx.lineTo(endPoint.x, endPoint.y);
@@ -59,36 +59,26 @@ function connectDots(array){
      }
 }
 
-function drawTimer(xStart, yStart, xEnd, yEnd){
-    const xDiff = xStart - xEnd;
-    const yDiff = yStart - yEnd;
-    const xSpeed = xDiff / (drawTime / 10);
-    const ySpeed = yDiff / (drawTime / 10);//draw a line segment every 100 miliseconds
-    let x = xStart;
-    let y = yStart;
-    let xNewEnd = xEnd;
-    let yNewEnd = yEnd;
-    do {
-      setTimeout(drawLine, 500, x, y, xNewEnd, yNewEnd)
-      x += xSpeed;
-      y += ySpeed;
-      xNewEnd += xSpeed;
-      yNewEnd += ySpeed;
-    } while (xNewEnd < xEnd && yNewEnd < yEnd);
+function animateLine(x1, y1, x2, y2, ratio){
+    ratio = ratio || 0;
+    drawLine (x1, y1, x2, y2, ratio)
+    if (ratio < 1) { //recursive loop to finish drawing
+        requestAnimationFrame(function() {
+            animateLine(x1, y1, x2, y2, ratio + 0.01);
+        });
+    }
 }
 
 
-function drawLine(xStart, yStart, xEnd, yEnd){
+function drawLine(x1, y1, x2, y2, ratio){
     ctx.beginPath();
-    ctx.moveTo(xStart, yStart);
-    ctx.lineTo(xEnd, yEnd);
+    ctx.moveTo(x1, y1);
+    x2 = x1 + ratio * (x2 - x1);
+    y2 = y1 + ratio * (y2 - y1);
+    ctx.lineTo(x2, y2);
     ctx.stroke();
 }
-// How to procedurally Draw a line
-// get start point and End point coords
-// Determine diff btwn x and Y start/end
-// Divide That distance by number of increments (one increment per 100ms)
-// Draw a piece of the line every 100ms
+
 
 
 
