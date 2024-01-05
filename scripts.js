@@ -4,8 +4,7 @@ let isDraw = false;
 let x = 0;
 let y = 0;
 
-//Array for storing double-click points
-let dotCoords = [];
+let dotCoords = []; //Array for storing double-click points
 //Update the Mouse Coordinate position
 function updateMessage(message){
     document.getElementById("mouseCoords").innerHTML = message;
@@ -40,26 +39,62 @@ function drawCircle(ctx, mousePosition){
 }
 
 function storeCoords(xPos, yPos, array){
-    array.push({
+    array.push({ //Struct with x and y coord stored on each array index
         x: xPos, 
         y: yPos
     }); //coordinates array
 }
 
+const drawTime = 5000; //in milliseconds
 
 function connectDots(array){
-     for (let j = 0; j < (array.length - 1); j++) {
+     for (let j = 0; j < (array.length - 1); j++) { //for each segment, finish at last coord pair
          const element = array[j];
          const endPoint = array[(j + 1)];
-        ctx.beginPath();
-        ctx.moveTo(element.x, element.y); //Draw from Current array coords to next array coords, finish before last one.
-        ctx.lineTo(endPoint.x, endPoint.y);
-        ctx.stroke();
+        drawTimer(element.x, element.y, endPoint.x, endPoint.y); 
+        // ctx.beginPath();
+        // ctx.moveTo(element.x, element.y);
+        // ctx.lineTo(endPoint.x, endPoint.y);
+        // ctx.stroke();
      }
 }
 
+function drawTimer(xStart, yStart, xEnd, yEnd){
+    const xDiff = xStart - xEnd;
+    const yDiff = yStart - yEnd;
+    const xSpeed = xDiff / (drawTime / 10);
+    const ySpeed = yDiff / (drawTime / 10);//draw a line segment every 100 miliseconds
+    let x = xStart;
+    let y = yStart;
+    let xNewEnd = xEnd;
+    let yNewEnd = yEnd;
+    do {
+      setTimeout(drawLine, 500, x, y, xNewEnd, yNewEnd)
+      x += xSpeed;
+      y += ySpeed;
+      xNewEnd += xSpeed;
+      yNewEnd += ySpeed;
+    } while (xNewEnd < xEnd && yNewEnd < yEnd);
+}
+
+
+function drawLine(xStart, yStart, xEnd, yEnd){
+    ctx.beginPath();
+    ctx.moveTo(xStart, yStart);
+    ctx.lineTo(xEnd, yEnd);
+    ctx.stroke();
+}
+// How to procedurally Draw a line
+// get start point and End point coords
+// Determine diff btwn x and Y start/end
+// Divide That distance by number of increments (one increment per 100ms)
+// Draw a piece of the line every 100ms
+
+
+
+
 function clearCanvas(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    dotCoords.splice(0,dotCoords.length);
+    dotCoords.splice(0,dotCoords.length); //clear coordinates
 }
 
