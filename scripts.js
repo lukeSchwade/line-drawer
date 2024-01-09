@@ -28,13 +28,14 @@ canvas.addEventListener('mousemove', function(evt){
 canvas.addEventListener("dblclick", (evt) => {
     let mousePosition = getMousePosition(canvas, evt);
     drawCircle (ctx, mousePosition);
+    storeCoords(mousePosition.x, mousePosition.y, dotCoords);
 })
 
 function drawCircle(ctx, mousePosition){
     ctx.beginPath();
     ctx.arc (mousePosition.x, mousePosition.y, 5, 0, 2 * Math.PI);
     ctx.stroke();
-    storeCoords(mousePosition.x, mousePosition.y, dotCoords);
+    
 }
 
 function storeCoords(xPos, yPos, array){
@@ -62,9 +63,10 @@ function connectDots(array){
 function animateLine(x1, y1, x2, y2, ratio){
     ratio = ratio || 0; //how much of the animation is complete
     drawLine (x1, y1, x2, y2, ratio)
-    if (ratio < 1) { //recursive loop to finish drawing
+    if (ratio < 1) { //recursive call to finish drawing
+        console.log("test", ratio);
         requestAnimationFrame(function() {
-            animateLine(x1, y1, x2, y2, ratio + 0.01);
+            animateLine(x1, y1, x2, y2, ratio + 0.02);
         });
     }
 }
@@ -83,3 +85,14 @@ function clearCanvas(){
     dotCoords.splice(0,dotCoords.length); //clear coordinates
 }
 
+function clearJustLines(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    reDrawCircles(dotCoords);
+}
+
+function reDrawCircles(array){
+    for (let a = 0; a < array.length; a++) {
+        const element = array[a];
+        drawCircle(ctx, element);
+    }
+}
