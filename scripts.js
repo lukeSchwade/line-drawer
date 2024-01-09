@@ -16,7 +16,6 @@ function getMousePosition(canvas, evt){
         x: evt.clientX - drawframe.left,
         y: evt.clientY - drawframe.top
     }
-
 }
 canvas.addEventListener('mousemove', function(evt){
     let mousePosition = getMousePosition(canvas, evt);
@@ -25,7 +24,7 @@ canvas.addEventListener('mousemove', function(evt){
 }, !1);
 
 
-//Draw a marker on double click
+//Draw a circle on double click
 canvas.addEventListener("dblclick", (evt) => {
     let mousePosition = getMousePosition(canvas, evt);
     drawCircle (ctx, mousePosition);
@@ -45,8 +44,6 @@ function storeCoords(xPos, yPos, array){
     }); //coordinates array
 }
 
-const drawTime = 5000; //in milliseconds
-
 function connectDots(array){
      for (let j = 0; j < (array.length - 1); j++) { //for each segment, finish at last coord pair
          const element = array[j];
@@ -59,8 +56,11 @@ function connectDots(array){
      }
 }
 
+
+
+//actual draw code
 function animateLine(x1, y1, x2, y2, ratio){
-    ratio = ratio || 0;
+    ratio = ratio || 0; //how much of the animation is complete
     drawLine (x1, y1, x2, y2, ratio)
     if (ratio < 1) { //recursive loop to finish drawing
         requestAnimationFrame(function() {
@@ -68,7 +68,6 @@ function animateLine(x1, y1, x2, y2, ratio){
         });
     }
 }
-
 
 function drawLine(x1, y1, x2, y2, ratio){
     ctx.beginPath();
@@ -78,10 +77,6 @@ function drawLine(x1, y1, x2, y2, ratio){
     ctx.lineTo(x2, y2);
     ctx.stroke();
 }
-
-
-
-
 
 function clearCanvas(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
