@@ -45,11 +45,11 @@ function storeCoords(xPos, yPos, array){
     }); //coordinates array
 }
 
-function connectDots(array){
-     for (let j = 0; j < (array.length - 1); j++) { //for each segment, finish at last coord pair
-         const element = array[j];
-         const endPoint = array[(j + 1)];
-        animateLine(element.x, element.y, endPoint.x, endPoint.y, 0); 
+async function connectDots(dotCoords){
+     for (let j = 0; j < (dotCoords.length - 1); j++) { //for each segment, finish at last coord pair
+         const element = dotCoords[j];
+         const endPoint = dotCoords[(j + 1)];
+        await animateLine(element.x, element.y, endPoint.x, endPoint.y, 0); 
         // ctx.beginPath();
         // ctx.moveTo(element.x, element.y);
         // ctx.lineTo(endPoint.x, endPoint.y);
@@ -57,15 +57,15 @@ function connectDots(array){
      }
 }
 
-async function asyncConnectDots (array){
+async function asyncConnectDots (dotCoords){
     try {
         let counter = 0;
-        for (const element of array) {
-           if (counter == array.length){ break; }
+        for (const element of dotCoords) {
+           if (counter == dotCoords.length){ break; }
 
-            const endPoint = array[(counter + 1)];
-            await animateLine(element.x, element.y, endPoint.x, endPoint.y, 0);
-            console.log("Next Iteration!!");
+            const endPoint = dotCoords[(counter + 1)];
+             animateLine(element.x, element.y, endPoint.x, endPoint.y, 0);
+            console.log("TEST!!");
             counter ++;
             
         }
@@ -74,6 +74,7 @@ async function asyncConnectDots (array){
     }
 }
 
+const wait
 //actual draw code
 async function animateLine(x1, y1, x2, y2, ratio){
     ratio = ratio || 0; //how much of the animation is complete
