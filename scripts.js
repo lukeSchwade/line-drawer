@@ -57,19 +57,40 @@ function connectDots(array){
      }
 }
 
+async function asyncConnectDots (array){
+    try {
+        let counter = 0;
+        for (const element of array) {
+           if (counter == array.length){ break; }
 
-
-//actual draw code
-function animateLine(x1, y1, x2, y2, ratio){
-    ratio = ratio || 0; //how much of the animation is complete
-    drawLine (x1, y1, x2, y2, ratio)
-    if (ratio < 1) { //recursive call to finish drawing
-        console.log("test", ratio);
-        requestAnimationFrame(function() {
-            animateLine(x1, y1, x2, y2, ratio + 0.02);
-        });
+            const endPoint = array[(counter + 1)];
+            await animateLine(element.x, element.y, endPoint.x, endPoint.y, 0);
+            console.log("Next Iteration!!");
+            counter ++;
+            
+        }
+    } catch (error){
+        console.error(error);
     }
 }
+
+//actual draw code
+async function animateLine(x1, y1, x2, y2, ratio){
+    ratio = ratio || 0; //how much of the animation is complete
+    drawLine (x1, y1, x2, y2, ratio)
+
+    if (ratio < 1) { //recursive call to finish drawing, ends at 1
+        return new Promise (resolve => {
+            const animate = requestAnimationFrame(function() {
+                animateLine(x1, y1, x2, y2, ratio + 0.01);
+            });
+        }).then(animateLine);
+    } else {
+      console.log("done");
+        return Promise.resolve();
+    }
+}
+
 
 function drawLine(x1, y1, x2, y2, ratio){
     ctx.beginPath();
