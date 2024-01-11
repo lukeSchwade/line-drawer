@@ -23,7 +23,6 @@ canvas.addEventListener('mousemove', function(evt){
     updateMessage(textPosition)
 }, !1);
 
-
 //Draw a circle on double click
 canvas.addEventListener("dblclick", (evt) => {
     let mousePosition = getMousePosition(canvas, evt);
