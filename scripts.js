@@ -38,61 +38,50 @@ function drawCircle(ctx, mousePosition){
     
 }
 
-function storeCoords(xPos, yPos, array){
-    array.push({ //Struct with x and y coord stored on each array index
+function storeCoords(xPos, yPos, dotCoords){
+    dotCoords.push({ //Struct with x and y coord stored on each array index
         x: xPos, 
         y: yPos
-    }); //coordinates array
+    }); 
 }
 
-async function connectDots(dotCoords){
-     for (let j = 0; j < (dotCoords.length - 1); j++) { //for each segment, finish at last coord pair
-         const element = dotCoords[j];
-         const endPoint = dotCoords[(j + 1)];
-        await animateLine(element.x, element.y, endPoint.x, endPoint.y, 0); 
-        // ctx.beginPath();
-        // ctx.moveTo(element.x, element.y);
-        // ctx.lineTo(endPoint.x, endPoint.y);
-        // ctx.stroke();
-     }
+
+function connectDots() {
+    drawNextSegment(0);
 }
 
-async function asyncConnectDots (dotCoords){
-    try {
-        let counter = 0;
-        for (const element of dotCoords) {
-           if (counter == dotCoords.length){ break; }
+function drawNextSegment (segment) { 
+    const startPos = dotCoords[segment];
+    const endPos = dotCoords[(segment + 1)];
+    console.log(`starting Drawing segment ${segment}`);
 
-            const endPoint = dotCoords[(counter + 1)];
-             animateLine(element.x, element.y, endPoint.x, endPoint.y, 0);
-            console.log("TEST!!");
-            counter ++;
-            
+    animateLine(startPos.x, startPos.y, endPos.x, endPos.y, 0, segment)
+        .then(x => {
+            console.log(`finished drawing segments ${x}`);
+            segment++;
+            if (segment < (dotCoords.length - 1)){ //end at second-to-last set
+                drawNextSegment(segment);
+            } else {
+                console.log("Finished!");
+            }
+    });
+}
+
+function animateLine(x1, y1, x2, y2, ratio, segment){
+    return new Promise((resolve) => {
+        ratio = ratio || 0;
+        drawLine (x1, y1, x2, y2, ratio);
+        if (ratio < 1) { //recursive loop to finish drawing
+            requestAnimationFrame(function() {
+            animateLine(x1, y1, x2, y2, ratio + 0.01, segment);
+        });
+        } else {
+            console.log (`finished drawing segment ${segment}`)
+            ratio = 0;
+            resolve(segment);
         }
-    } catch (error){
-        console.error(error);
-    }
+    });
 }
-
-const wait
-//actual draw code
-async function animateLine(x1, y1, x2, y2, ratio){
-    ratio = ratio || 0; //how much of the animation is complete
-    drawLine (x1, y1, x2, y2, ratio)
-
-    if (ratio < 1) { //recursive call to finish drawing, ends at 1
-        return new Promise (resolve => {
-            const animate = requestAnimationFrame(function() {
-                animateLine(x1, y1, x2, y2, ratio + 0.01);
-            });
-        }).then(animateLine);
-    } else {
-      console.log("done");
-        return Promise.resolve();
-    }
-}
-
-
 function drawLine(x1, y1, x2, y2, ratio){
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -101,7 +90,7 @@ function drawLine(x1, y1, x2, y2, ratio){
     ctx.lineTo(x2, y2);
     ctx.stroke();
 }
-
+ 
 function clearCanvas(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     dotCoords.splice(0,dotCoords.length); //clear coordinates
@@ -118,3 +107,50 @@ function reDrawCircles(array){
         drawCircle(ctx, element);
     }
 }
+// async function animateLine(x1, y1, x2, y2, ratio){
+//     ratio = ratio || 0; //how much of the animation is complete
+//     drawLine (x1, y1, x2, y2, ratio)
+
+//     if (ratio < 1) { //recursive call to finish drawing, ends at 1
+//         return new Promise (resolve => {
+//             const animate = requestAnimationFrame(function() {
+//                 animateLine(x1, y1, x2, y2, ratio + 0.01);
+//             });
+//         }).then(animateLine);
+//     } else {
+//         resolve();
+//     }
+// }
+
+// function getCoordPair (dotCoords){
+//     return 
+// }
+
+// async function connectDots(dotCoords){
+//      for (let j = 0; j < (dotCoords.length - 1); j++) { //for each segment, finish at last coord pair
+//         const element = dotCoords[j];
+//         const endPoint = dotCoords[(j + 1)];
+//         animateLine(element.x, element.y, endPoint.x, endPoint.y, 0); 
+//         // ctx.beginPath();
+//         // ctx.moveTo(element.x, element.y);
+//         // ctx.lineTo(endPoint.x, endPoint.y);
+//         // ctx.stroke();
+//      }
+// }
+
+// async function asyncConnectDots (dotCoords){
+//     try {
+//         let counter = 0;
+//         for (const element of dotCoords) {
+//            if (counter == dotCoords.length){ break; }
+
+//             const endPoint = dotCoords[(counter + 1)];
+//             await animateLine(element.x, element.y, endPoint.x, endPoint.y, 0);
+//             console.log("TEST!!");
+//             counter ++;
+            
+//         }
+//     } catch (error){
+//         console.error(error);
+//     }
+// }
