@@ -73,7 +73,7 @@ function animateLine(x1, y1, x2, y2, ratio, segment){
         drawLine (x1, y1, x2, y2, ratio);
         if (ratio < 1) { //recursive loop to finish drawing
             requestAnimationFrame(function() {
-            animateLine(x1, y1, x2, y2, ratio + 0.01, segment);
+            animateLine(x1, y1, x2, y2, ratio + 0.02, segment).then(segment => resolve(segment));
         });
         } else {
             console.log (`finished drawing segment ${segment}`)
