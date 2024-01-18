@@ -1,10 +1,10 @@
 const canvas = document.getElementById("brushCanvas");
 const ctx = canvas.getContext('2d');
-let isDraw = false;
 let x = 0;
 let y = 0;
 
 let dotCoords = []; //Array for storing double-click points
+
 //Update the Mouse Coordinate position
 function updateMessage(message){
     document.getElementById("mouseCoords").innerHTML = message;
@@ -24,8 +24,8 @@ canvas.addEventListener('mousemove', function(evt){
 }, !1);
 
 
-//Draw a circle on double click
-canvas.addEventListener("dblclick", (evt) => {
+//Draw a circle on click
+canvas.addEventListener("click", (evt) => {
     let mousePosition = getMousePosition(canvas, evt);
     drawCircle (ctx, mousePosition);
     storeCoords(mousePosition.x, mousePosition.y, dotCoords);
@@ -39,9 +39,10 @@ function drawCircle(ctx, mousePosition){
 }
 
 function storeCoords(xPos, yPos, dotCoords){
-    dotCoords.push({ //Struct with x and y coord stored on each array index
+    dotCoords.push({ //Struct with x and y coord stored on each array index, and isdrawn property
         x: xPos, 
-        y: yPos
+        y: yPos,
+        isDrawn: 0,
     }); 
 }
 
@@ -51,13 +52,17 @@ function connectDots() {
 }
 
 function drawNextSegment (segment) { 
+    while (dotCoords[segment].isDrawn){ //Cycle to first non-drawn segment
+        segment++;
+    }
     const startPos = dotCoords[segment];
     const endPos = dotCoords[(segment + 1)];
     console.log(`starting Drawing segment ${segment}`);
-
-    animateLine(startPos.x, startPos.y, endPos.x, endPos.y, 0, segment)
+    try {
+        animateLine(startPos.x, startPos.y, endPos.x, endPos.y, 0, segment)
         .then(x => {
             console.log(`finished drawing segments ${x}`);
+            dotCoords[segment].isDrawn = true;
             segment++;
             if (segment < (dotCoords.length - 1)){ //end at second-to-last set
                 drawNextSegment(segment);
@@ -65,6 +70,10 @@ function drawNextSegment (segment) {
                 console.log("Finished!");
             }
     });
+    } catch (error) {
+        console.error(error);
+    }
+
 }
 
 function animateLine(x1, y1, x2, y2, ratio, segment){
@@ -99,11 +108,9 @@ function clearCanvas(){
 function clearJustLines(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     reDrawCircles(dotCoords);
+    dotCoords.map((x) => x.isDrawn = false); //reset drawCheck for all circles
 }
 
 function reDrawCircles(array){
-    for (let a = 0; a < array.length; a++) {
-        const element = array[a];
-        drawCircle(ctx, element);
-    }
+    array.map((circle) => drawCircle(ctx, circle));
 }
